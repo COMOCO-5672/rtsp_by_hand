@@ -51,6 +51,7 @@ class Timer {
     int64_t getNextTimerOut() const { return m_next_timeout_; }
 
   private:
+    friend class TimerQueue;
     bool m_is_repeat_ = false;
     TimerEvent m_event_cb = [] { return false; };
     uint32_t m_internal_ = 0;
@@ -60,8 +61,14 @@ class Timer {
 class TimerQueue {
 
   public:
-    TimerQueue(/* args */);
-    ~TimerQueue();
+  uint32_t AddTimer(const TimerEvent &event, uint32_t msec);
+  void RemoveTimer(uint32_t timer_id);
+
+  int64_t GetTimerRemaining();
+  void HandleTimerEvent();
+
+  private:
+    int64_t GetTimerNow();
 
   private:
     std::mutex m_mutex_;

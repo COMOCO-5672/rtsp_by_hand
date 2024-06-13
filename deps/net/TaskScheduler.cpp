@@ -1,28 +1,25 @@
+#include "TaskScheduler.h"
+#include "Socket.h"
 
-
-namespace Scheduler
+namespace Task_Scheduler {
+TaskScheduler::TaskScheduler(int id) 
+            : m_id_(id)
+            , m_is_shut_down_(false)
+            , m_wakeup_pipe_(new Pipe())
+            , m_trigger_event_(new xop::RingBuffer<TriggerEvent>(kMaxTriggerEvents))
 {
-    class TaskScheduler
-    {
-    private:
-        /* data */
-    public:
-        TaskScheduler(int id = 1);
-        virtual ~TaskScheduler();
+    static std::once_flag flag;
+    std::call_once(flag, [] {
+#if defined(WIN32) || defined(_WIN32)
+        WSADATA wsaData;
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+            WSACleanup();
+        }
+#endif
+    });
 
-        void Start();
-        void Stop();
+    if (m_wakeup_pipe_->) {
 
-        uint32_t AddTimer(TimerEvent )
-    };
-    
-    TaskScheduler::TaskScheduler(/* args */)
-    {
     }
-    
-    TaskScheduler::~TaskScheduler()
-    {
-    }
-    
-} // namespace Scheduler
-
+}
+} // namespace Task_Scheduler
